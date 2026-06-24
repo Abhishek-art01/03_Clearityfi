@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Money Manager — Take Control of Your Finances</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --indigo:    #6366F1;
+    --indigo-dk: #4338CA;
+    --indigo-lt: #A5B4FC;
+    --green:     #10B981;
+    --red:       #F43F5E;
+    --night:     #0F0F1A;
+    --card:      #16162A;
+    --line:      #1E1E35;
+    --text:      #E2E2F0;
+    --muted:     #8888AA;
+    --white:     #FFFFFF;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--night);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ─────────────────────────────────── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 40px;
+    background: rgba(15,15,26,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.1rem; font-weight: 700;
+    color: var(--white); letter-spacing: -0.5px;
+  }
+  .nav-logo span { color: var(--indigo); }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none; font-size: 0.9rem;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--white); }
+  .nav-cta {
+    background: var(--indigo); color: var(--white);
+    padding: 10px 22px; border-radius: 10px; text-decoration: none;
+    font-size: 0.88rem; font-weight: 600;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .nav-cta:hover { background: var(--indigo-dk); transform: translateY(-1px); }
+
+  /* ── HERO ─────────────────────────────────── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -120px; left: 50%; transform: translateX(-50%);
+    width: 700px; height: 700px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem; font-weight: 700; letter-spacing: 2.5px;
+    color: var(--indigo-lt); text-transform: uppercase;
+    margin-bottom: 20px;
+    padding: 6px 16px; border: 1px solid rgba(163,180,252,0.25); border-radius: 100px;
+    display: inline-block;
+  }
+  .hero h1 {
+    font-size: clamp(2.6rem, 6vw, 5rem); font-weight: 800; line-height: 1.1;
+    letter-spacing: -2px; margin-bottom: 24px;
+    background: linear-gradient(135deg, #fff 30%, var(--indigo-lt) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero h1 em { font-style: normal; color: var(--indigo); -webkit-text-fill-color: var(--indigo); }
+  .hero p {
+    font-size: 1.15rem; color: var(--muted); max-width: 520px;
+    margin: 0 auto 40px; font-weight: 300; line-height: 1.8;
+  }
+  .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+  .btn-primary {
+    background: var(--indigo); color: #fff; padding: 16px 34px;
+    border-radius: 12px; text-decoration: none; font-weight: 700; font-size: 1rem;
+    transition: all 0.2s; box-shadow: 0 8px 30px rgba(99,102,241,0.35);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary:hover { background: var(--indigo-dk); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(99,102,241,0.45); }
+  .btn-ghost {
+    background: transparent; color: var(--text); padding: 16px 34px;
+    border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 1rem;
+    border: 1.5px solid var(--line); transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-ghost:hover { border-color: var(--indigo-lt); color: var(--white); }
+
+  /* ── PHONE MOCKUP ──────────────────────────── */
+  .phone-wrap {
+    margin-top: 70px; position: relative; display: inline-block;
+  }
+  .phone {
+    width: 240px; height: 480px; border-radius: 36px;
+    background: var(--card); border: 2px solid var(--line);
+    box-shadow: 0 40px 100px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+    overflow: hidden; position: relative;
+  }
+  .phone-notch {
+    width: 80px; height: 20px; background: var(--night);
+    border-radius: 0 0 12px 12px; margin: 0 auto;
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  }
+  .phone-screen {
+    padding: 30px 14px 14px; height: 100%;
+    background: linear-gradient(160deg, #16162A 0%, #0f0f1a 100%);
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .ph-header { font-size: 0.6rem; font-weight: 700; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 2px; }
+  .ph-balance { font-size: 1.5rem; font-weight: 800; color: #fff; letter-spacing: -1px; }
+  .ph-balance span { font-size: 0.75rem; font-weight: 400; color: var(--muted); }
+  .ph-cards { display: flex; gap: 6px; }
+  .ph-card {
+    flex: 1; border-radius: 10px; padding: 8px;
+    background: var(--line); font-size: 0.55rem;
+  }
+  .ph-card .lbl { color: var(--muted); font-size: 0.48rem; text-transform: uppercase; letter-spacing: 0.5px; }
+  .ph-card .val { font-weight: 700; font-size: 0.7rem; margin-top: 2px; }
+  .ph-card.income .val { color: var(--green); }
+  .ph-card.expense .val { color: var(--red); }
+  .ph-bar-label { font-size: 0.5rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+  .ph-bars { display: flex; gap: 4px; align-items: flex-end; height: 60px; }
+  .ph-bar-item { display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 1; }
+  .ph-bar { width: 100%; border-radius: 4px 4px 0 0; background: var(--indigo); opacity: 0.6; transition: opacity 0.3s; }
+  .ph-bar.active { opacity: 1; }
+  .ph-bar-m { font-size: 0.4rem; color: var(--muted); }
+  .ph-txns { display: flex; flex-direction: column; gap: 5px; margin-top: 4px; }
+  .ph-txn { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; background: var(--line); border-radius: 8px; }
+  .ph-txn-info { display: flex; align-items: center; gap: 5px; }
+  .ph-txn-icon { width: 18px; height: 18px; border-radius: 6px; background: rgba(99,102,241,0.2); display: flex; align-items: center; justify-content: center; font-size: 9px; }
+  .ph-txn-name { font-size: 0.52rem; font-weight: 600; color: var(--text); }
+  .ph-txn-cat { font-size: 0.42rem; color: var(--muted); }
+  .ph-txn-amt { font-size: 0.58rem; font-weight: 700; }
+  .ph-txn-amt.neg { color: var(--red); }
+  .ph-txn-amt.pos { color: var(--green); }
+
+  /* floating badges */
+  .badge {
+    position: absolute; background: var(--card); border: 1.5px solid var(--line);
+    border-radius: 14px; padding: 8px 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    font-size: 0.8rem; font-weight: 600; white-space: nowrap;
+    animation: float 3s ease-in-out infinite;
+  }
+  .badge-green { color: var(--green); border-color: rgba(16,185,129,0.3); }
+  .badge-indigo { color: var(--indigo-lt); }
+  .badge.b1 { left: -110px; top: 80px; animation-delay: 0s; }
+  .badge.b2 { right: -120px; top: 160px; animation-delay: 1s; }
+  .badge.b3 { left: -90px; bottom: 100px; animation-delay: 2s; }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-6px); }
+  }
+
+  /* ── STATS STRIP ───────────────────────────── */
+  .stats {
+    display: flex; justify-content: center; gap: 0;
+    border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+    background: rgba(99,102,241,0.04);
+    flex-wrap: wrap;
+  }
+  .stat-item {
+    flex: 1; min-width: 160px; text-align: center;
+    padding: 32px 20px; border-right: 1px solid var(--line);
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num { font-family: 'Space Mono', monospace; font-size: 2rem; font-weight: 700; color: var(--white); }
+  .stat-num span { color: var(--indigo); }
+  .stat-lbl { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+
+  /* ── FEATURES ──────────────────────────────── */
+  section { padding: 100px 24px; }
+  .section-eyebrow {
+    font-family: 'Space Mono', monospace; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 2px; color: var(--indigo-lt); text-transform: uppercase;
+    margin-bottom: 14px; display: block; text-align: center;
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800; letter-spacing: -1.5px;
+    text-align: center; color: var(--white); margin-bottom: 12px;
+  }
+  .section-sub { text-align: center; color: var(--muted); max-width: 500px; margin: 0 auto 60px; font-size: 1rem; line-height: 1.8; }
+
+  .features-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px; max-width: 1000px; margin: 0 auto;
+  }
+  .feat-card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+    padding: 32px;
+    transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+  }
+  .feat-card:hover {
+    border-color: rgba(99,102,241,0.4); transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(99,102,241,0.12);
+  }
+  .feat-icon {
+    width: 48px; height: 48px; border-radius: 14px;
+    background: rgba(99,102,241,0.15); display: flex; align-items: center; justify-content: center;
+    font-size: 22px; margin-bottom: 18px;
+  }
+  .feat-card h3 { font-size: 1.05rem; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+  .feat-card p { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
+
+  /* ── HIGHLIGHT (how it works) ─────────────── */
+  .how {
+    background: var(--card); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  }
+  .steps { display: flex; gap: 0; max-width: 800px; margin: 0 auto; flex-wrap: wrap; }
+  .step {
+    flex: 1; min-width: 200px; text-align: center; padding: 20px;
+    position: relative;
+  }
+  .step:not(:last-child)::after {
+    content: '→';
+    position: absolute; right: -12px; top: 28px;
+    color: var(--indigo); font-size: 1.2rem;
+  }
+  .step-num {
+    font-family: 'Space Mono', monospace; font-size: 2rem; font-weight: 700;
+    color: rgba(99,102,241,0.2); margin-bottom: 12px;
+  }
+  .step h4 { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 6px; }
+  .step p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+  /* ── AI BUBBLE ─────────────────────────────── */
+  .ai-section { text-align: center; }
+  .chat-demo {
+    max-width: 440px; margin: 0 auto;
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 20px; padding: 24px; display: flex; flex-direction: column; gap: 14px;
+  }
+  .chat-msg {
+    border-radius: 16px; padding: 12px 16px; font-size: 0.88rem; line-height: 1.6; text-align: left;
+    animation: fadeIn 0.4s ease;
+  }
+  .chat-msg.user { background: var(--indigo); color: #fff; align-self: flex-end; border-radius: 16px 16px 4px 16px; }
+  .chat-msg.ai   { background: var(--line); color: var(--text); align-self: flex-start; border-radius: 16px 16px 16px 4px; }
+  .ai-badge { display: inline-flex; align-items: center; gap: 6px; font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--indigo-lt); margin-bottom: 8px; }
+  .ai-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); display: inline-block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── CTA ───────────────────────────────────── */
+  .cta-section {
+    text-align: center; padding: 100px 24px;
+    background: radial-gradient(ellipse at center, rgba(99,102,241,0.12) 0%, transparent 70%);
+  }
+  .cta-section h2 { font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 800; letter-spacing: -1.5px; color: var(--white); margin-bottom: 16px; }
+  .cta-section p { color: var(--muted); margin-bottom: 40px; font-size: 1rem; }
+  .download-note {
+    margin-top: 20px; font-size: 0.82rem; color: var(--muted);
+    display: flex; align-items: center; gap: 8px; justify-content: center;
+  }
+  .coming-badge {
+    background: rgba(99,102,241,0.15); color: var(--indigo-lt);
+    border: 1px solid rgba(99,102,241,0.3); border-radius: 100px;
+    padding: 4px 12px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.5px;
+  }
+
+  /* ── FOOTER ────────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--line); padding: 32px 40px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+  }
+  footer p { font-size: 0.8rem; color: var(--muted); }
+  .footer-logo { font-family: 'Space Mono', monospace; font-size: 0.9rem; font-weight: 700; color: var(--white); }
+  .footer-logo span { color: var(--indigo); }
+
+  /* ── RESPONSIVE ────────────────────────────── */
+  @media (max-width: 680px) {
+    nav { padding: 14px 20px; }
+    .nav-links { display: none; }
+    .badge { display: none; }
+    .step:not(:last-child)::after { display: none; }
+    footer { flex-direction: column; text-align: center; }
+    .stat-item { border-right: none; border-bottom: 1px solid var(--line); }
+    .stat-item:last-child { border-bottom: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">money<span>mgr</span></div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#ai">AI insights</a></li>
+  </ul>
+  <a href="#download" class="nav-cta">Get the App</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Personal Finance · Android App</div>
+  <h1>Your money,<br><em>finally</em> under control</h1>
+  <p>Track income & expenses, set budgets, analyse spending, and let AI surface insights — all in one beautifully simple app.</p>
+  <div class="hero-btns">
+    <a href="#download" class="btn-primary">⬇ Download Now</a>
+    <a href="#features" class="btn-ghost">See what's inside</a>
+  </div>
+
+  <!-- Phone mockup -->
+  <div class="phone-wrap">
+    <div class="badge b1 badge-green">+₹12,500 saved 🎉</div>
+    <div class="badge b2 badge-indigo">📊 Budget on track</div>
+    <div class="badge b3">🤖 AI insight ready</div>
+
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="ph-header">June 2026</div>
+        <div class="ph-balance">₹48,250 <span>net balance</span></div>
+        <div class="ph-cards">
+          <div class="ph-card income">
+            <div class="lbl">Income</div>
+            <div class="val">₹72,000</div>
+          </div>
+          <div class="ph-card expense">
+            <div class="lbl">Expenses</div>
+            <div class="val">₹23,750</div>
+          </div>
+        </div>
+        <div class="ph-bar-label">Spending last 6 months</div>
+        <div class="ph-bars">
+          <div class="ph-bar-item"><div class="ph-bar" style="height:30px"></div><div class="ph-bar-m">Jan</div></div>
+          <div class="ph-bar-item"><div class="ph-bar" style="height:45px"></div><div class="ph-bar-m">Feb</div></div>
+          <div class="ph-bar-item"><div class="ph-bar" style="height:28px"></div><div class="ph-bar-m">Mar</div></div>
+          <div class="ph-bar-item"><div class="ph-bar" style="height:55px"></div><div class="ph-bar-m">Apr</div></div>
+          <div class="ph-bar-item"><div class="ph-bar" style="height:38px"></div><div class="ph-bar-m">May</div></div>
+          <div class="ph-bar active" style="height:42px;width:100%;border-radius:4px 4px 0 0;"></div>
+        </div>
+        <div class="ph-txns">
+          <div class="ph-txn">
+            <div class="ph-txn-info">
+              <div class="ph-txn-icon">🛒</div>
+              <div><div class="ph-txn-name">Grocery</div><div class="ph-txn-cat">Food</div></div>
+            </div>
+            <div class="ph-txn-amt neg">−₹840</div>
+          </div>
+          <div class="ph-txn">
+            <div class="ph-txn-info">
+              <div class="ph-txn-icon">💼</div>
+              <div><div class="ph-txn-name">Salary</div><div class="ph-txn-cat">Income</div></div>
+            </div>
+            <div class="ph-txn-amt pos">+₹72,000</div>
+          </div>
+          <div class="ph-txn">
+            <div class="ph-txn-info">
+              <div class="ph-txn-icon">⚡</div>
+              <div><div class="ph-txn-name">Electric Bill</div><div class="ph-txn-cat">Utilities</div></div>
+            </div>
+            <div class="ph-txn-amt neg">−₹1,200</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-item"><div class="stat-num">8<span>+</span></div><div class="stat-lbl">Expense categories</div></div>
+  <div class="stat-item"><div class="stat-num">AI<span>✦</span></div><div class="stat-lbl">Smart spending insights</div></div>
+  <div class="stat-item"><div class="stat-num">100<span>%</span></div><div class="stat-lbl">Free to use</div></div>
+  <div class="stat-item"><div class="stat-num">∞</div><div class="stat-lbl">Transaction history</div></div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+  <span class="section-eyebrow">Everything you need</span>
+  <h2 class="section-title">Powerful features, zero clutter</h2>
+  <p class="section-sub">Built to make personal finance feel less like a chore and more like being in command.</p>
+
+  <div class="features-grid">
+    <div class="feat-card">
+      <div class="feat-icon">💰</div>
+      <h3>Transaction Tracking</h3>
+      <p>Log income and expenses in seconds. Categorise automatically, add notes, and never lose track of where your money goes.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🏦</div>
+      <h3>Multiple Accounts</h3>
+      <p>Manage cash, bank accounts, credit cards, and wallets — all in one unified balance view.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🎯</div>
+      <h3>Smart Budgets</h3>
+      <p>Set monthly budgets per category. Get real-time progress and alerts before you overspend.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📊</div>
+      <h3>Visual Analytics</h3>
+      <p>Beautiful charts showing spending trends, category breakdowns, and month-over-month comparison at a glance.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🤖</div>
+      <h3>AI Financial Insights</h3>
+      <p>An AI assistant that reads your spending data and tells you exactly where you can save — in plain language.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🏷️</div>
+      <h3>Custom Categories</h3>
+      <p>Create, rename, and colour-code categories that match your actual lifestyle — not a generic template.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🌙</div>
+      <h3>Dark & Light Mode</h3>
+      <p>Follows your system theme automatically. Looks great at midnight or in bright sunlight.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🔒</div>
+      <h3>Private by Design</h3>
+      <p>Your financial data stays on your device. No account required, no data ever sold.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="how">
+  <span class="section-eyebrow">How it works</span>
+  <h2 class="section-title">Three steps to financial clarity</h2>
+  <p class="section-sub">No setup headache. Open the app and you're ready in under a minute.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h4>Add transactions</h4>
+      <p>Tap the + button, pick a category, enter the amount. Done in 5 seconds.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h4>Set budgets</h4>
+      <p>Define monthly limits per category. The app tracks your pace automatically.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h4>Get insights</h4>
+      <p>Check the analytics tab or ask the AI assistant what you should cut this month.</p>
+    </div>
+  </div>
+</section>
+
+<!-- AI SECTION -->
+<section id="ai" class="ai-section">
+  <span class="section-eyebrow">AI Assistant</span>
+  <h2 class="section-title">Ask your money anything</h2>
+  <p class="section-sub">The built-in AI reads your actual transaction history and gives advice that fits your life.</p>
+
+  <div class="chat-demo">
+    <div class="ai-badge"><span class="ai-dot"></span> Money Manager AI</div>
+    <div class="chat-msg user">Where did most of my money go last month?</div>
+    <div class="chat-msg ai">Your top spend last month was <strong>Food & Dining at ₹6,840</strong> — 29% of your total expenses. Dining out on weekends accounted for most of it. Setting a ₹5,000 limit for Food could save you ₹1,800+ monthly.</div>
+    <div class="chat-msg user">How do I save ₹10,000 this month?</div>
+    <div class="chat-msg ai">Based on your history: cut Dining by ₹2,000, pause subscriptions worth ₹1,200, and your Grocery spend is 18% above your 3-month average — trimming that saves another ₹900. That's ₹4,100 identified. I'll flag anything new as the month goes on. 💡</div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="download" class="cta-section">
+  <h2>Ready to own your finances?</h2>
+  <p>Download Money Manager — free, forever.</p>
+  <a href="#" class="btn-primary" style="font-size:1.1rem; padding:18px 42px; display:inline-flex;">
+    ⬇ &nbsp;Download for Android
+  </a>
+  <div class="download-note">
+    <span class="coming-badge">Coming Soon</span>
+    iOS version in development
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">money<span>mgr</span></div>
+  <p>Built with ❤️ · Privacy-first · Free forever</p>
+  <p style="font-size:0.75rem; color: var(--muted);">© 2026 Money Manager</p>
+</footer>
+
+</body>
+</html>
