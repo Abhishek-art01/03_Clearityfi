@@ -1,0 +1,6 @@
+{
+  "buildCommand": "echo 'Static site, nothing to build'",
+  "outputDirectory": "apps/web",
+  "framework": "other",
+  "regions": ["sfo1"]
+}
