@@ -72,3 +72,8 @@ Thumbs.db
 .cache/
 .local/
 .turbo/
+
+# Release artifacts
+artifacts/
+dist/
+*.apk
